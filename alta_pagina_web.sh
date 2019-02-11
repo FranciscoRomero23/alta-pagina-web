@@ -31,5 +31,16 @@ function Crea_Directorio {
 	# Reiniciamos el servidor web
 	ssh -i $clavessh root@$servidorweb systemctl restart httpd
 }
+function Crea_UsuarioFtp {
+	# Creamos el usuario para el servidor ftp
+	ssh -i $clavessh root@$servidorweb useradd -m $nombre_usuario
+	# Creamos la contraseña del usuario
+	ssh -i $clavessh root@$servidorweb echo "$nombre_usuario10" | passwd $nombre_usuario --stdin
+	# Añadimos el usuario al servidor ftp
+	ssh -i $clavessh root@$servidorweb echo "DefaultRoot     /var/www/$nombre_pagina/public_html  $nombre_usuario" >> /etc/proftpd.conf
+	# Reiniciamos el servidor ftp
+        ssh -i $clavessh root@$servidorweb systemctl restart proftpd
+}
 Crea_Virtualhost
 Crea_Directorio
+Crea_UsuarioFtp

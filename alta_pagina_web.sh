@@ -8,8 +8,9 @@
 clavessh="/home/francisco/.ssh/clave_openstack"
 # Servidores
 servidorweb="172.22.200.57"
-servidordns=""
-
+servidordns="172.22.200.60"
+# Zonas del servidor dns
+zonadirecta="/var/cache/bind/db.francisco.gonzalonazareno.org"
 # Página y usuario
 nombre_pagina=$1
 nombre_usuario=$2
@@ -44,6 +45,17 @@ function Crea_UsuarioFtp {
         # Reiniciamos el servidor ftp
         ssh -i $clavessh root@$servidorweb systemctl restart proftpd
 }
+function Habilita_Pagina {
+	# Añadimos el nuevo registro cname
+	nuevocname=""$nombre_pagina"	IN	CNAME	zapatero"
+	ssh -i $clavessh root@$servidordns 'echo '$nuevocname' >> '$zonadirecta''
+	# Reiniciamos el servidor dns
+	ssh -i $clavessh root@$servidordns systemctl restart bind9
+	ssh -i $clavessh root@$servidordns rndc reload
+}
+
+# Ejecutamos las funciones
 Crea_Virtualhost
 Crea_Directorio
 Crea_UsuarioFtp
+Habilita_Pagina

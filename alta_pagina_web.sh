@@ -5,19 +5,20 @@
 
 ## Parametros
 # Clave ssh
-clavessh=""
+clavessh="/home/francisco/.ssh/clave_openstack"
 # Servidores
-servidorweb=""
+servidorweb="172.22.200.57"
 servidordns=""
+
+nombre_pagina=$1
 
 # Funciones
 
 function Crea_Virtualhost {
-
+	# Creamos el virtualhost
+	scp -i $clavessh ./default-host.conf root@$servidorweb:/etc/httpd/sites-available/$nombre_pagina.conf
+	ssh -i $clavessh root@$servidorweb sed -i s/'paginaweb'/$nombre_pagina/g /etc/httpd/sites-available/$nombre_pagina.conf
+	# Habilitamos el virtualhost
+	ssh -i $clavessh root@$servidorweb ln -s /etc/httpd/sites-available/$nombre_pagina.conf /etc/httpd/sites-enabled/$nombre_pagina.conf
 }
-function Crea_Directorio {
-}
-function Habilita_Pagina {
-}
-
-
+Crea_Virtualhost

@@ -19,7 +19,7 @@ nombre_usuario=$2
 
 function Crea_Virtualhost {
         # Creamos el virtualhost
-        scp -i $clavessh ./default-host.conf root@$servidorweb:/etc/httpd/sites-available/$nombre_pagina.conf
+        scp -i $clavessh ./default-host.conf root@$servidorweb:/etc/httpd/sites-available/$nombre_pagina.conf 1> /dev/null
         ssh -i $clavessh root@$servidorweb sed -i s/'paginaweb'/$nombre_pagina/g /etc/httpd/sites-available/$nombre_pagina.conf
         # Habilitamos el virtualhost
         ssh -i $clavessh root@$servidorweb ln -s /etc/httpd/sites-available/$nombre_pagina.conf /etc/httpd/sites-enabled/$nombre_pagina.conf
@@ -29,7 +29,7 @@ function Crea_Directorio {
         ssh -i $clavessh root@$servidorweb mkdir -p /var/www/$nombre_pagina/public_html
         # Creamos un index.html de ejemplo
         ssh -i $clavessh root@$servidorweb touch /var/www/$nombre_pagina/public_html/index.html
-        scp -i $clavessh ./default-index.html root@$servidorweb:/var/www/$nombre_pagina/public_html/index.html
+        scp -i $clavessh ./default-index.html root@$servidorweb:/var/www/$nombre_pagina/public_html/index.html 1> /dev/null
         ssh -i $clavessh root@$servidorweb sed -i s/'paginaweb'/$nombre_pagina/g /var/www/$nombre_pagina/public_html/index.html
         # Reiniciamos el servidor web
         ssh -i $clavessh root@$servidorweb systemctl restart httpd
@@ -51,7 +51,7 @@ function Habilita_Pagina {
 	ssh -i $clavessh root@$servidordns 'echo '$nuevocname' >> '$zonadirecta''
 	# Reiniciamos el servidor dns
 	ssh -i $clavessh root@$servidordns systemctl restart bind9
-	ssh -i $clavessh root@$servidordns rndc reload
+	ssh -i $clavessh root@$servidordns rndc reload 1> /dev/null
 }
 
 # Ejecutamos las funciones
@@ -59,3 +59,8 @@ Crea_Virtualhost
 Crea_Directorio
 Crea_UsuarioFtp
 Habilita_Pagina
+
+# Mostramos información del hosting
+echo "Página: "$nombre_pagina".francisco.gonzalonazareno.org"
+echo "Usuario ftp: "$nombre_usuario""
+echo "Contraseña: "$password""

@@ -31,7 +31,7 @@ function Crea_Directorio {
         ssh -i $clavessh root@$servidorweb touch /var/www/$nombre_pagina/public_html/index.html
         scp -i $clavessh ./default-index.html root@$servidorweb:/var/www/$nombre_pagina/public_html/index.html 1> /dev/null
         ssh -i $clavessh root@$servidorweb sed -i s/'paginaweb'/$nombre_pagina/g /var/www/$nombre_pagina/public_html/index.html
-        # Reiniciamos el servidor web
+	# Reiniciamos el servidor web
         ssh -i $clavessh root@$servidorweb systemctl restart httpd
 }
 function Crea_UsuarioFtp {
@@ -59,6 +59,8 @@ Crea_Virtualhost
 Crea_Directorio
 Crea_UsuarioFtp
 Habilita_Pagina
+# Cambiamos permisos directorio
+ssh -i $clavessh root@$servidorweb 'chown -R '"$2"':'"$2"' /var/www/'"$1"''
 
 # Mostramos información del hosting
 echo "Página: "$nombre_pagina".francisco.gonzalonazareno.org"
